@@ -1,0 +1,26 @@
+# Docker Compose file for running only MySQL locally
+# Use this if you want to run the Python app locally but MySQL in Docker
+# Note: version field removed as it's obsolete in Docker Compose v2+
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: checkmate-mysql-local
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=checkmate_db
+      - MYSQL_USER=checkmate_user
+      - MYSQL_PASSWORD=checkmate_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data_local:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mysql_data_local:
+

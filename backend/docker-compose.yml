@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    container_name: checkmate-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+      - ./app/static:/app/app/static
+    environment:
+      - DATABASE_URL=mysql+pymysql://checkmate_user:checkmate_password@mysql:3306/checkmate_db
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-change-in-production}
+      - DEBUG=${DEBUG:-false}
+    depends_on:
+      - mysql
+    networks:
+      - checkmate-network
+
+  mysql:
+    image: mysql:8.0
+    container_name: checkmate-mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=checkmate_db
+      - MYSQL_USER=checkmate_user
+      - MYSQL_PASSWORD=checkmate_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - checkmate-network
+
+  ocr:
+    build:
+      context: ./ocr
+      dockerfile: Dockerfile
+    container_name: checkmate-ocr
+    ports:
+      - "8001:8000"
+    networks:
+      - checkmate-network
+    # Optional: Add OCR service configuration here
+
+  adminer:
+    image: adminer:latest
+    container_name: checkmate-adminer
+    ports:
+      - "8080:8080"
+    environment:
+      - ADMINER_DEFAULT_SERVER=mysql
+    networks:
+      - checkmate-network
+    depends_on:
+      - mysql
+
+networks:
+  checkmate-network:
+    driver: bridge
+
+volumes:
+  mysql_data:
+

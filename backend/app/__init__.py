@@ -1,0 +1,2 @@
+"""Checkmate backend application."""
+

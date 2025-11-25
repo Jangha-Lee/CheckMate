@@ -1,0 +1,1425 @@
+{
+	"info": {
+		"_postman_id": "checkmate-api-collection",
+		"name": "Checkmate API",
+		"description": "Complete API collection for Checkmate backend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Sign Up",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 201\", function () {",
+									"    pm.response.to.have.status(201);",
+									"});",
+									"",
+									"pm.test(\"Response has username\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData).to.have.property('username');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"testuser\",\n    \"email\": \"test@example.com\",\n    \"password\": \"testpassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{api_url}}/auth/signup",
+							"host": ["{{api_url}}"],
+							"path": ["auth", "signup"]
+						}
+					}
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"token\", jsonData.access_token);",
+									"    console.log(\"Token saved:\", jsonData.access_token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"testuser\",\n    \"password\": \"testpassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{api_url}}/auth/login",
+							"host": ["{{api_url}}"],
+							"path": ["auth", "login"]
+						}
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/auth/logout?token={{token}}",
+							"host": ["{{api_url}}"],
+							"path": ["auth", "logout"],
+							"query": [
+								{
+									"key": "token",
+									"value": "{{token}}"
+								}
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Health Check",
+			"item": [
+				{
+					"name": "Health",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/health",
+							"host": ["{{base_url}}"],
+							"path": ["health"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Get Current User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/users/me",
+							"host": ["{{api_url}}"],
+							"path": ["users", "me"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Trips",
+			"item": [
+				{
+					"name": "Create Trip",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"trip_id\", jsonData.id);",
+									"    console.log(\"Trip ID saved:\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Summer Vacation 2024\",\n    \"start_date\": \"2024-07-01\",\n    \"end_date\": \"2024-07-15\",\n    \"base_currency\": \"KRW\"\n}"
+						},
+						"url": {
+							"raw": "{{api_url}}/trips",
+							"host": ["{{api_url}}"],
+							"path": ["trips"]
+						}
+					}
+				},
+				{
+					"name": "List Trips",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/trips",
+							"host": ["{{api_url}}"],
+							"path": ["trips"]
+						}
+					}
+				},
+				{
+					"name": "Get Trip Details",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/trips/{{trip_id}}",
+							"host": ["{{api_url}}"],
+							"path": ["trips", "{{trip_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Invite Participant",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"anotheruser\"\n}"
+						},
+						"url": {
+							"raw": "{{api_url}}/trips/{{trip_id}}/participants",
+							"host": ["{{api_url}}"],
+							"path": ["trips", "{{trip_id}}", "participants"]
+						}
+					}
+				},
+				{
+					"name": "Get Trip Status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/trips/{{trip_id}}/status",
+							"host": ["{{api_url}}"],
+							"path": ["trips", "{{trip_id}}", "status"]
+						}
+					}
+				},
+				{
+					"name": "Set Current Trip",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/trips/{{trip_id}}/set_current",
+							"host": ["{{api_url}}"],
+							"path": ["trips", "{{trip_id}}", "set_current"]
+						},
+						"description": "Set trip as current (client-side implementation)."
+					}
+				},
+				{
+					"name": "Press Settlement Button",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/trips/{{trip_id}}/settle",
+							"host": ["{{api_url}}"],
+							"path": ["trips", "{{trip_id}}", "settle"]
+						},
+						"description": "Marks the current user as having pressed the settlement button. If all participants have pressed, settlement calculation is automatically triggered."
+					}
+				},
+				{
+					"name": "Get Settlement Result",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/trips/{{trip_id}}/settlement",
+							"host": ["{{api_url}}"],
+							"path": ["trips", "{{trip_id}}", "settlement"]
+						},
+						"description": "Get the latest settlement result for the trip. Returns 404 if no settlement has been calculated yet."
+					}
+				},
+				{
+					"name": "Get Participant List",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/trips/{{trip_id}}/participants",
+							"host": ["{{api_url}}"],
+							"path": ["trips", "{{trip_id}}", "participants"]
+						},
+						"description": "Get list of all participants with their settlement status (has_settled flag)."
+					}
+				}
+			]
+		},
+		{
+			"name": "Expenses",
+			"item": [
+				{
+					"name": "Create Expense",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"expense_id\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 50000,\n    \"currency\": \"KRW\",\n    \"description\": \"Lunch at restaurant\",\n    \"category\": \"Food\",\n    \"time\": \"14:30\",\n    \"participant_ids\": [1, 2]\n}"
+						},
+						"url": {
+							"raw": "{{api_url}}/expenses/{{trip_id}}/2024-07-05",
+							"host": ["{{api_url}}"],
+							"path": ["expenses", "{{trip_id}}", "2024-07-05"]
+						}
+					}
+				},
+				{
+					"name": "Get Expenses by Date",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/expenses/{{trip_id}}/2024-07-05",
+							"host": ["{{api_url}}"],
+							"path": ["expenses", "{{trip_id}}", "2024-07-05"]
+						}
+					}
+				},
+				{
+					"name": "Update Expense",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 60000,\n    \"currency\": \"KRW\",\n    \"description\": \"Updated lunch description\",\n    \"category\": \"Food\",\n    \"time\": \"15:45\",\n    \"participant_ids\": [1, 2]\n}"
+						},
+						"url": {
+							"raw": "{{api_url}}/expenses/{{expense_id}}",
+							"host": ["{{api_url}}"],
+							"path": ["expenses", "{{expense_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Update Expense Amount Only",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"amount\": 70000\n}"
+						},
+						"url": {
+							"raw": "{{api_url}}/expenses/{{expense_id}}",
+							"host": ["{{api_url}}"],
+							"path": ["expenses", "{{expense_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Update Expense Currency",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"currency\": \"USD\"\n}"
+						},
+						"url": {
+							"raw": "{{api_url}}/expenses/{{expense_id}}",
+							"host": ["{{api_url}}"],
+							"path": ["expenses", "{{expense_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Update Expense Participants",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"participant_ids\": [1, 2, 3]\n}"
+						},
+						"url": {
+							"raw": "{{api_url}}/expenses/{{expense_id}}",
+							"host": ["{{api_url}}"],
+							"path": ["expenses", "{{expense_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Delete Expense",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/expenses/{{expense_id}}",
+							"host": ["{{api_url}}"],
+							"path": ["expenses", "{{expense_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Upload Expense via OCR and Create",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var jsonData = pm.response.json();",
+									"    pm.environment.set(\"expense_id\", jsonData.id);",
+									"    console.log(\"Expense created from OCR:\", jsonData.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "participant_ids",
+									"value": "1,2",
+									"type": "text",
+									"description": "Comma-separated list of user IDs (optional). If not provided, only current user will be added as participant."
+								}
+							]
+						},
+						"url": {
+							"raw": "{{api_url}}/expenses/{{trip_id}}/2024-07-05/ocr/create",
+							"host": ["{{api_url}}"],
+							"path": ["expenses", "{{trip_id}}", "2024-07-05", "ocr", "create"]
+						},
+						"description": "Upload image for OCR parsing and immediately create expense using same logic as manual creation. Uses OCR results to populate expense fields, then creates expense with participants. Date logic: Uses parsed date from OCR if present, otherwise uses URL date parameter."
+					}
+				}
+			]
+		},
+		{
+			"name": "OCR",
+			"item": [
+				{
+					"name": "Parse Receipt Image",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{api_url}}/ocr/parse",
+							"host": ["{{api_url}}"],
+							"path": ["ocr", "parse"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Diary",
+			"item": [
+				{
+					"name": "Upload Photos",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "files",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "memo",
+									"value": "Great day at the beach!",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{api_url}}/diary/{{trip_id}}/2024-07-05/photos",
+							"host": ["{{api_url}}"],
+							"path": ["diary", "{{trip_id}}", "2024-07-05", "photos"]
+						}
+					}
+				},
+				{
+					"name": "Add Memo",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"memo\": \"Had a wonderful day exploring the city!\"\n}"
+						},
+						"url": {
+							"raw": "{{api_url}}/diary/{{trip_id}}/2024-07-05/memo",
+							"host": ["{{api_url}}"],
+							"path": ["diary", "{{trip_id}}", "2024-07-05", "memo"]
+						}
+					}
+				},
+				{
+					"name": "Get Diary Entry",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/diary/{{trip_id}}/2024-07-05",
+							"host": ["{{api_url}}"],
+							"path": ["diary", "{{trip_id}}", "2024-07-05"]
+						}
+					}
+				},
+				{
+					"name": "Upload Photo for Expense",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": []
+								},
+								{
+									"key": "memo",
+									"value": "Receipt photo",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{api_url}}/diary/expenses/{{expense_id}}/photos",
+							"host": ["{{api_url}}"],
+							"path": ["diary", "expenses", "{{expense_id}}", "photos"]
+						}
+					}
+				},
+				{
+					"name": "Get Diary Entry for Expense",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/diary/expenses/{{expense_id}}",
+							"host": ["{{api_url}}"],
+							"path": ["diary", "expenses", "{{expense_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Add Memo for Expense",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"memo\": \"Receipt saved, paid with credit card\"\n}"
+						},
+						"url": {
+							"raw": "{{api_url}}/diary/expenses/{{expense_id}}/memo",
+							"host": ["{{api_url}}"],
+							"path": ["diary", "expenses", "{{expense_id}}", "memo"]
+						}
+					}
+				},
+				{
+					"name": "Update Memo for Expense",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"memo\": \"Updated memo for expense\"\n}"
+						},
+						"url": {
+							"raw": "{{api_url}}/diary/expenses/{{expense_id}}/memo",
+							"host": ["{{api_url}}"],
+							"path": ["diary", "expenses", "{{expense_id}}", "memo"]
+						}
+					}
+				},
+				{
+					"name": "Delete Photo for Expense",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/diary/expenses/{{expense_id}}/photos",
+							"host": ["{{api_url}}"],
+							"path": ["diary", "expenses", "{{expense_id}}", "photos"]
+						},
+						"description": "Delete photo linked to a specific expense. Indexed by expense_id."
+					}
+				},
+				{
+					"name": "Delete Memo for Expense",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/diary/expenses/{{expense_id}}/memo",
+							"host": ["{{api_url}}"],
+							"path": ["diary", "expenses", "{{expense_id}}", "memo"]
+						},
+						"description": "Delete memo linked to a specific expense. Indexed by expense_id."
+					}
+				},
+				{
+					"name": "Update Daily Memo",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"memo\": \"Updated daily memo\"\n}"
+						},
+						"url": {
+							"raw": "{{api_url}}/diary/{{trip_id}}/2024-07-05/memo",
+							"host": ["{{api_url}}"],
+							"path": ["diary", "{{trip_id}}", "2024-07-05", "memo"]
+						}
+					}
+				},
+				{
+					"name": "Delete Daily Memo",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/diary/{{trip_id}}/2024-07-05/memo",
+							"host": ["{{api_url}}"],
+							"path": ["diary", "{{trip_id}}", "2024-07-05", "memo"]
+						}
+					}
+				},
+				{
+					"name": "Update Photo",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{api_url}}/diary/{{trip_id}}/2024-07-05/photos/{{photo_id}}",
+							"host": ["{{api_url}}"],
+							"path": ["diary", "{{trip_id}}", "2024-07-05", "photos", "{{photo_id}}"]
+						},
+						"description": "Update photo metadata. Indexed by trip_id, date, and photo_id. Note: memo is stored at DiaryEntry level, not photo level."
+					}
+				},
+				{
+					"name": "Delete Photo",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/diary/{{trip_id}}/2024-07-05/photos/{{photo_id}}",
+							"host": ["{{api_url}}"],
+							"path": ["diary", "{{trip_id}}", "2024-07-05", "photos", "{{photo_id}}"]
+						},
+						"description": "Delete a photo. Indexed by trip_id, date, and photo_id."
+					}
+				}
+			]
+		},
+		{
+			"name": "Calendar",
+			"item": [
+				{
+					"name": "Get Daily Indicators",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/calendar/{{trip_id}}/days",
+							"host": ["{{api_url}}"],
+							"path": ["calendar", "{{trip_id}}", "days"]
+						}
+					}
+				},
+				{
+					"name": "Get Daily Data",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/calendar/{{trip_id}}/2024-07-05",
+							"host": ["{{api_url}}"],
+							"path": ["calendar", "{{trip_id}}", "2024-07-05"]
+						}
+					}
+				},
+				{
+					"name": "Set Mood",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"date\": \"2024-07-05\",\n    \"mood_emoji\": \"😊\"\n}"
+						},
+						"url": {
+							"raw": "{{api_url}}/calendar/{{trip_id}}/2024-07-05/mood",
+							"host": ["{{api_url}}"],
+							"path": ["calendar", "{{trip_id}}", "2024-07-05", "mood"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Budget",
+			"item": [
+				{
+					"name": "Set Budget",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"budget_amount_base\": 1000000\n}"
+						},
+						"url": {
+							"raw": "{{api_url}}/budget/{{trip_id}}",
+							"host": ["{{api_url}}"],
+							"path": ["budget", "{{trip_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Budget",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/budget/{{trip_id}}",
+							"host": ["{{api_url}}"],
+							"path": ["budget", "{{trip_id}}"]
+						}
+					}
+				},
+				{
+					"name": "Get Budget Summary",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/budget/{{trip_id}}/summary",
+							"host": ["{{api_url}}"],
+							"path": ["budget", "{{trip_id}}", "summary"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "Settlement",
+			"item": [
+				{
+					"name": "Trigger Settlement",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/settlement/{{trip_id}}/trigger",
+							"host": ["{{api_url}}"],
+							"path": ["settlement", "{{trip_id}}", "trigger"]
+						}
+					}
+				},
+				{
+					"name": "Get Settlement Result",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/settlement/{{trip_id}}/result",
+							"host": ["{{api_url}}"],
+							"path": ["settlement", "{{trip_id}}", "result"]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "FX Rates",
+			"item": [
+				{
+					"name": "Get Exchange Rate",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/fx-rates/2024-07-05?currency=USD&trip_id={{trip_id}}",
+							"host": ["{{api_url}}"],
+							"path": ["fx-rates", "2024-07-05"],
+							"query": [
+								{
+									"key": "currency",
+									"value": "USD",
+									"description": "Currency code (default: USD)"
+								},
+								{
+									"key": "trip_id",
+									"value": "{{trip_id}}",
+									"description": "Trip ID (required)"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Exchange Rate (EUR)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/fx-rates/2024-07-05?currency=EUR&trip_id={{trip_id}}",
+							"host": ["{{api_url}}"],
+							"path": ["fx-rates", "2024-07-05"],
+							"query": [
+								{
+									"key": "currency",
+									"value": "EUR"
+								},
+								{
+									"key": "trip_id",
+									"value": "{{trip_id}}"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Exchange Rate (JPY)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{api_url}}/fx-rates/2024-07-05?currency=JPY&trip_id={{trip_id}}",
+							"host": ["{{api_url}}"],
+							"path": ["fx-rates", "2024-07-05"],
+							"query": [
+								{
+									"key": "currency",
+									"value": "JPY"
+								},
+								{
+									"key": "trip_id",
+									"value": "{{trip_id}}"
+								}
+							]
+						}
+					}
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000"
+		},
+		{
+			"key": "api_url",
+			"value": "http://localhost:8000/api"
+		},
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "trip_id",
+			"value": ""
+		},
+		{
+			"key": "expense_id",
+			"value": ""
+		},
+		{
+			"key": "photo_id",
+			"value": ""
+		}
+	]
+}
+
