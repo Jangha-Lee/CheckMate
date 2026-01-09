@@ -16,6 +16,7 @@ class DiaryPhotoResponse(DiaryPhotoBase):
     """Schema for diary photo response."""
     id: int
     file_path: str
+    file_url: str  # URL to access the file via /static endpoint
     order_index: int
     created_at: datetime
     memo: Optional[str] = None  # Always None - memo is stored in DiaryEntry.memo

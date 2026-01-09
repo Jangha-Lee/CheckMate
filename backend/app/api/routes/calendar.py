@@ -157,10 +157,17 @@ async def get_daily_data(
     diary_responses = []
     for diary_entry in diary_entries:
         # Build photo responses (memo is always None at photo level)
+        # Helper function to convert file_path to URL
+        def get_file_url(file_path: str) -> str:
+            import os
+            filename = os.path.basename(file_path)
+            return f"/static/{filename}"
+        
         photo_responses = [
             DiaryPhotoResponse(
                 id=p.id,
                 file_path=p.file_path,
+                file_url=get_file_url(p.file_path),
                 file_name=p.file_name,
                 memo=None,  # Always None - memo is stored in DiaryEntry.memo
                 order_index=p.order_index,

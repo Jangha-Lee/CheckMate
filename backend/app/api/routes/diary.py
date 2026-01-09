@@ -22,6 +22,14 @@ from app.core.config import settings
 router = APIRouter(prefix="/diary", tags=["diary"])
 
 
+def get_file_url(file_path: str) -> str:
+    """Convert file path to URL for static file serving."""
+    # Extract filename from path (e.g., "app/static/photo.jpg" -> "photo.jpg")
+    filename = os.path.basename(file_path)
+    # Return URL path (e.g., "/static/photo.jpg")
+    return f"/static/{filename}"
+
+
 # Expense-linked diary endpoints (must come before date-based routes)
 @router.post("/expenses/{expense_id}/photos", response_model=DiaryEntryResponse, status_code=status.HTTP_201_CREATED)
 async def upload_photos_for_expense(
@@ -126,6 +134,7 @@ async def upload_photos_for_expense(
         DiaryPhotoResponse(
             id=p.id,
             file_path=p.file_path,
+            file_url=get_file_url(p.file_path),
             file_name=p.file_name,
             memo=None,  # Always None - memo is stored in DiaryEntry.memo
             order_index=p.order_index,
@@ -206,6 +215,7 @@ async def create_or_update_memo_for_expense(
         DiaryPhotoResponse(
             id=p.id,
             file_path=p.file_path,
+            file_url=get_file_url(p.file_path),
             file_name=p.file_name,
             memo=None,  # Always None - memo is stored in DiaryEntry.memo
             order_index=p.order_index,
@@ -363,6 +373,7 @@ async def get_diary_entry_for_expense(
         DiaryPhotoResponse(
             id=p.id,
             file_path=p.file_path,
+            file_url=get_file_url(p.file_path),
             file_name=p.file_name,
             memo=None,  # Always None - memo is stored in DiaryEntry.memo, not DiaryPhoto.memo
             order_index=p.order_index,
@@ -482,6 +493,7 @@ async def get_diary_entry(
             DiaryPhotoResponse(
                 id=p.id,
                 file_path=p.file_path,
+                file_url=get_file_url(p.file_path),
                 file_name=p.file_name,
                 memo=None,  # Always None - memo is stored in DiaryEntry.memo, not DiaryPhoto.memo
                 order_index=p.order_index,
@@ -660,6 +672,7 @@ async def update_photo(
     return DiaryPhotoResponse(
         id=photo.id,
         file_path=photo.file_path,
+        file_url=get_file_url(photo.file_path),
         file_name=photo.file_name,
         memo=None,  # Always None - memo is in DiaryEntry.memo
         order_index=photo.order_index,
@@ -794,6 +807,7 @@ async def create_or_update_memo(
         DiaryPhotoResponse(
             id=p.id,
             file_path=p.file_path,
+            file_url=get_file_url(p.file_path),
             file_name=p.file_name,
             memo=None,  # Always None - memo is stored in DiaryEntry.memo
             order_index=p.order_index,

@@ -4,6 +4,7 @@ Image feed routes for photo timeline.
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
+import os
 from app.db.session import get_db
 from app.models.user import User
 from app.models.diary import DiaryPhoto, DiaryEntry
@@ -12,6 +13,12 @@ from app.api.dependencies import get_current_user
 from app.api.routes.trips import check_trip_access
 
 router = APIRouter(tags=["feed"])
+
+
+def get_file_url(file_path: str) -> str:
+    """Convert file path to URL for static file serving."""
+    filename = os.path.basename(file_path)
+    return f"/static/{filename}"
 
 
 @router.get("/trips/{trip_id}/feed", response_model=List[DiaryPhotoResponse])
@@ -30,7 +37,19 @@ async def get_photo_feed(
         DiaryEntry.trip_id == trip_id
     ).order_by(DiaryPhoto.created_at.desc()).offset(offset).limit(limit).all()
     
-    return photos
+    # Convert to response with file_url
+    return [
+        DiaryPhotoResponse(
+            id=p.id,
+            file_path=p.file_path,
+            file_url=get_file_url(p.file_path),
+            file_name=p.file_name,
+            memo=None,
+            order_index=p.order_index,
+            created_at=p.created_at
+        )
+        for p in photos
+    ]
 
 
 @router.get("/photos/{photo_id}", response_model=DiaryPhotoResponse)
@@ -53,5 +72,13 @@ async def get_photo_detail(
     if diary_entry:
         check_trip_access(diary_entry.trip_id, current_user.id, db)
     
-    return photo
+    return DiaryPhotoResponse(
+        id=photo.id,
+        file_path=photo.file_path,
+        file_url=get_file_url(photo.file_path),
+        file_name=photo.file_name,
+        memo=None,
+        order_index=photo.order_index,
+        created_at=photo.created_at
+    )
 
